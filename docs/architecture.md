@@ -69,5 +69,5 @@ To see this diagram rendered, paste it into [plantuml.com/plantuml](https://www.
 - No public sign-up. There is no register page and no approve/decline queue. Admins create every account.
 - Login and forgot-password are protected by a Cloudflare Turnstile captcha.
 - New accounts get a temporary password and are forced to set their own on first login.
-- Welcome and decline emails open the admin's own mail app (mailto). The only email the server actually sends is the password reset.
+- Welcome and decline emails open the admin's own mail app (mailto). The server itself sends two: the password reset (GoTrue over SMTP) and the Directory contact relay (`send-contact` over Resend's HTTP API). Both use the same Resend credential.
 - LinkedIn is stored as a handle only, so a profile link can never point somewhere malicious.

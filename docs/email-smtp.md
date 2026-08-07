@@ -1,16 +1,20 @@
 
 ## What sends email in this app
 
-Almost nothing. This is a login-only build:
+Two things, and they share one Resend account:
 
-- Welcome emails and decline emails open the admin's own mail app (a `mailto:` link). The server does not send those.
-- The ONLY email the server sends is the **password-reset** mail, from the auth server (GoTrue) over SMTP.
+| Sender | What | How |
+|---|---|---|
+| GoTrue (`auth`) | Password reset | **SMTP** (`SMTP_HOST` etc.) |
+| `send-contact` edge function | Directory member-to-member first contact | **Resend HTTP API**, not SMTP. Reuses `SMTP_PASS` as the Resend API key. |
 
-So all you need is one working SMTP connection, and you only need it in production. Locally, reset mail is caught by Mailpit at http://localhost:8035 and nobody has to receive anything.
+Not sent by the server: welcome and decline emails open the admin's own mail app via a `mailto:` link.
 
-## Local: nothing to do
+Both draw on the same Resend quota, so a busy day of directory messages can stop password resets and vice versa.
 
-The template already points GoTrue at Mailpit:
+## Local
+
+The template points GoTrue at Mailpit, so reset mail is caught locally and nobody receives anything:
 
 ```
 SMTP_HOST=mailpit
@@ -19,7 +23,9 @@ SMTP_USER=
 SMTP_PASS=
 ```
 
-Trigger a reset from the app, then open http://localhost:8035 to read it. Done.
+Trigger a reset from the app, then open http://localhost:8035 to read it.
+
+> **Mailpit does not catch directory messages.** `send-contact` calls `api.resend.com` directly and never goes through `SMTP_HOST`. With `SMTP_PASS` empty (the default above) it returns `Contact relay is not configured.` and sends nothing — that is the safe local state. If you paste a real Resend key into a local `.env`, directory messages leave your dev machine and reach real inboxes.
 
 ## Production: point GoTrue at Resend
 
@@ -77,9 +83,15 @@ Common issues:
 
 ## Alternative: Gmail / Google Workspace SMTP
 
-You can point GoTrue at Gmail instead of Resend. **No code changes** — it is the same `SMTP_*`
-block, just different values. Good if you already have a Google account and do not want to
-verify a domain. The trade-offs vs Resend:
+> **This breaks the Directory contact relay.** `send-contact` reads `SMTP_PASS` and sends it as a
+> bearer token to `api.resend.com`, so a Gmail App Password there makes every directory message
+> fail with a 502 while password resets keep working normally. Only use Gmail if the Directory
+> contact feature is off, or change `send-contact` to read a separate `RESEND_API_KEY` and keep a
+> Resend key in that var.
+
+You can point GoTrue at Gmail instead of Resend. It is the same `SMTP_*` block with different
+values, and it needs no code changes **for password reset**. Good if you already have a Google
+account and do not want to verify a domain. The trade-offs vs Resend:
 
 - **Send limits:** a free `@gmail.com` account allows ~**500 emails/day**; paid **Google
   Workspace** allows ~**2,000/day**. Far more than password resets need.

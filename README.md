@@ -8,7 +8,7 @@ The ICFAI Founders Network app, in a build where there is no public sign-up. Adm
 - Login-only: no register page, no approve/decline queue. Admins add members from the Admin Panel.
 - Login and password reset are protected by a Cloudflare captcha.
 - New accounts get a temporary password and must set their own on first login.
-- The only email the server sends is the password reset. Welcome and decline emails open the admin's own mail app.
+- The server sends two emails, both through Resend: the password reset (GoTrue, over SMTP) and the Directory member-to-member contact relay (`send-contact`, over Resend's HTTP API). Welcome and decline emails open the admin's own mail app.
 
 ## Start here
 
@@ -46,6 +46,7 @@ Then make the first admin: Studio at http://localhost:8010 -> Authentication -> 
 | [docs/docker-sql.md](docs/docker-sql.md) | Running SQL from the terminal, every argument explained |
 | [docs/email-smtp.md](docs/email-smtp.md) | Setting up Resend for real password-reset emails |
 | [docs/changing-the-logo.md](docs/changing-the-logo.md) | Swapping the in-app logo, favicon, and email logo |
+| [docs/selfhost-layout.md](docs/selfhost-layout.md) | What every folder under `selfhost/` (volumes, tests, utils) is for |
 
 ## Where things run
 
