@@ -1,9 +1,17 @@
 .obsidian/
 .DS_Store
 .claude/
+ccusage/
 
 # impeccable local tooling state (critique snapshots, config)
 .impeccable/
+
+# deepsec security-scan workspace. Holds unremediated findings against the
+# live deployment, so it must never land in this public repo.
+.deepsec/
+
+# Audit response drafts and exhibits (~11 MB). Correspondence, not source.
+docs/audit-response/
 
 # supabase CLI local link/state
 supabase/.temp/
