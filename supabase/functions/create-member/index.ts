@@ -9,7 +9,8 @@
 // before a service-role client creates the auth user. The new account is flagged
 // must_change_password = true, so the user is forced to set their own password on first login.
 //
-// Deploy:  supabase functions deploy create-member
+// Deploy: copy into selfhost/volumes/functions/ and recreate the functions container, or
+//         `supabase functions deploy create-member`.
 // (SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY are injected by the platform.)
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
