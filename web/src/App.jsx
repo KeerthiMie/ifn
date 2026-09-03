@@ -18,6 +18,7 @@ import Directory from './pages/Directory'
 import UserProfile from './pages/UserProfile'
 import Notifications from './pages/Notifications'
 import Onboarding from './pages/Onboarding'
+import Terms from './pages/Terms'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import OnboardingGate from './components/OnboardingGate'
@@ -31,6 +32,9 @@ function App() {
       <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
       <Route path="/forgot-password" element={<PublicOnlyRoute><ForgotPassword /></PublicOnlyRoute>} />
       <Route path="/reset-password" element={<ResetPassword />} />
+
+      {/* Terms & Conditions acceptance flow (must complete before password change) */}
+      <Route path="/terms" element={<ProtectedRoute><Terms /></ProtectedRoute>} />
 
       {/* first-time profile setup (authed, but outside the app shell). PasswordChangeGate
           forces a temp-password user to set their own password before anything else. */}

@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/AuthProvider'
 import { supabase } from '../lib/supabase'
 import { errMessage } from '../lib/errors'
 import { passwordError } from '../lib/password'
+import { CURRENT_TERMS_VERSION } from '../lib/termsConfig'
 import Logo from './Logo'
 import Spinner from './Spinner'
 
@@ -11,10 +13,25 @@ import Spinner from './Spinner'
 // this is done. Sits outside OnboardingGate so the password change happens first.
 export default function PasswordChangeGate({ children }) {
   const { profile, profileLoaded, refreshProfile } = useAuth()
+  const navigate = useNavigate()
   const [pw, setPw] = useState('')
   const [confirm, setConfirm] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+
+  // If user must change password, ensure terms are accepted first
+  const termsAccepted = Boolean(
+    profile?.terms_step1_accepted &&
+    profile?.terms_step2_accepted &&
+    profile?.terms_step3_accepted &&
+    profile?.terms_version === CURRENT_TERMS_VERSION
+  )
+
+  useEffect(() => {
+    if (profileLoaded && profile?.must_change_password && !termsAccepted) {
+      navigate('/terms', { replace: true })
+    }
+  }, [profileLoaded, profile, termsAccepted, navigate])
 
   // spin only while the fetch is in flight, never on a genuinely missing row.
   if (!profileLoaded) {
@@ -24,8 +41,14 @@ export default function PasswordChangeGate({ children }) {
       </div>
     )
   }
+
   // no profile row yet: nothing to force here — let OnboardingGate send them to /onboarding.
   if (!profile) return children
+
+  if (profile.must_change_password && !termsAccepted) {
+    // Render nothing while navigation occurs
+    return null
+  }
   if (!profile.must_change_password) return children
 
   async function submit(e) {
