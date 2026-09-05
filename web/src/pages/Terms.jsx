@@ -146,15 +146,17 @@ export default function Terms() {
 
           {/* Current Step Overview */}
           <div className="mb-4">
-            <div className="text-xs font-semibold uppercase tracking-wider text-muted">
+            <div className="text-xs font-semibold uppercase tracking-wider text-accent dark:text-accent-hover">
               {currentStep.category}
             </div>
             <h2 className="mt-0.5 text-base font-bold text-ink sm:text-lg">
               {currentStep.title}
             </h2>
-            <p className="mt-1 text-xs sm:text-sm text-muted">
-              {currentStep.description}
-            </p>
+            {currentStep.subtitle && (
+              <p className="mt-0.5 text-xs italic text-muted">
+                {currentStep.subtitle}
+              </p>
+            )}
           </div>
 
           {/* Scrollable Terms Box Header */}
@@ -211,11 +213,11 @@ export default function Terms() {
                   setAccepted(e.target.checked)
                   if (error) setError('')
                 }}
-                className="mt-0.5 h-4 w-4 rounded border-line accent-accent cursor-pointer"
+                className="mt-0.5 h-4 w-4 rounded border-line accent-accent cursor-pointer flex-shrink-0"
                 disabled={busy}
               />
-              <span className="text-xs sm:text-sm text-ink font-medium leading-snug">
-                I have read, understood, and agree to the Terms & Conditions above.
+              <span className="text-xs sm:text-sm text-ink font-medium leading-relaxed">
+                {currentStep.checkboxText || 'I have read, understood, and agree to the Terms & Conditions above.'}
               </span>
             </label>
           </div>
