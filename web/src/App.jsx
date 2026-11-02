@@ -60,7 +60,8 @@ function App() {
         <Route path="notifications" element={<Notifications />} />
         <Route path="u/:id" element={<UserProfile />} />
         <Route path="admin" element={<AdminPanel />} />
-        <Route path="autopsy-library" element={<AutopsyLibrary />} />
+        <Route path="failure-stories" element={<AutopsyLibrary />} />
+        <Route path="autopsy-library" element={<Navigate to="/failure-stories" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

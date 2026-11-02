@@ -189,7 +189,19 @@ export default function Services() {
             <button className={filterChip(payFilter === 'free')} onClick={() => setPayFilter((v) => (v === 'free' ? 'all' : 'free'))}>Free</button>
           </>
         )}
-        {skillFilter && (
+        <button
+          className={filterChip(skillFilter === 'Legal Services')}
+          onClick={() => setSkillFilter((s) => (s === 'Legal Services' ? null : 'Legal Services'))}
+        >
+          Legal Services
+        </button>
+        <button
+          className={filterChip(skillFilter === 'Accounting and Finance')}
+          onClick={() => setSkillFilter((s) => (s === 'Accounting and Finance' ? null : 'Accounting and Finance'))}
+        >
+          Accounting & Finance
+        </button>
+        {skillFilter && skillFilter !== 'Legal Services' && skillFilter !== 'Accounting and Finance' && (
           <button className={filterChip(true)} onClick={() => setSkillFilter(null)}>
             Skill: {skillFilter} <X size={11} className="ml-0.5 inline" />
           </button>
@@ -626,6 +638,23 @@ function PostModal({ kind, edit, onClose, onSaved }) {
             <input className="input" maxLength={60} value={skillInput} onChange={(e) => setSkillInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addSkill() } }} placeholder="Add a skill, press Enter" />
             <button className="btn-outline shrink-0 px-4" type="button" onClick={addSkill}>Add</button>
+          </div>
+          <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-muted">
+            <span className="font-medium">Quick suggestions:</span>
+            {['Legal Services', 'Accounting and Finance', 'Design', 'Tech/Dev', 'Marketing'].map((sug) => (
+              <button
+                key={sug}
+                type="button"
+                className="rounded-full border border-line bg-page px-2 py-0.5 text-xs hover:border-accent hover:text-ink transition-colors"
+                onClick={() => {
+                  if (!skills.includes(sug) && skills.length < MAX_SKILLS) {
+                    setSkills([...skills, sug])
+                  }
+                }}
+              >
+                + {sug}
+              </button>
+            ))}
           </div>
         </L>
       </div>

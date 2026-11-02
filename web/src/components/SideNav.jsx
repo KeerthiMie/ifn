@@ -8,7 +8,7 @@ const ITEMS = [
   { to: '/problem-hub', label: 'Problem Hub', icon: Puzzle, title: 'Post real-world problems; the network proposes solutions' },
   { to: '/services', label: 'Services', icon: HeartHandshake, title: 'Offer or request skills and resources from the network' },
   { to: '/directory', label: 'Directory', icon: LayoutGrid, title: 'Browse and connect with IFN members' },
-  { to: '/autopsy-library', label: 'Autopsy Library', icon: FolderHeart, title: 'Post-mortems of failed ideas — what went wrong and why' },
+  { to: '/failure-stories', label: 'Failure Stories', icon: FolderHeart, title: 'Case studies of failed ideas — lessons learned and what survived' },
   { to: '/calendar', label: 'Calendar', icon: Calendar, title: 'IFN events and deadlines', mobileOnly: true },
 ]
 

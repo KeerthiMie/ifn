@@ -7,7 +7,7 @@ const SECTIONS = [
   { icon: Workflow, label: 'Idea Pipeline', desc: 'Track your startup through 6 mentor-reviewed gates, from first submission to incubation.' },
   { icon: Puzzle, label: 'Problem Hub', desc: 'Post a real-world problem; the network proposes and votes on solutions.' },
   { icon: HeartHandshake, label: 'Services', desc: 'Offer or request skills, intros, and resources from fellow founders.' },
-  { icon: FolderHeart, label: 'Autopsy Library', desc: 'Post-mortems of failed ideas — what went wrong and what survived.' },
+  { icon: FolderHeart, label: 'Failure Stories', desc: 'Case studies of failed ideas — lessons learned and what survived.' },
 ]
 
 export default function FirstRunBanner() {

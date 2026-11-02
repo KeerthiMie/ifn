@@ -243,7 +243,7 @@ export default function AdminPanel() {
         <button {...tabProps('pipeline')}><Workflow size={15} /> Pipeline</button>
         <button {...tabProps('add')}><UserPlus size={15} /> Add member</button>
         <button {...tabProps('settings')}><SlidersHorizontal size={15} /> Settings</button>
-        <button {...tabProps('autopsies')}><FolderHeart size={15} /> Autopsies ({autopsies.length})</button>
+        <button {...tabProps('autopsies')}><FolderHeart size={15} /> Failure Stories ({autopsies.length})</button>
       </div>
 
       {error && <div role="alert" className="mt-4 rounded-lg border border-down/30 bg-down/10 px-3 py-2 text-sm text-down">{error}</div>}
@@ -325,13 +325,13 @@ export default function AdminPanel() {
       ) : tab === 'autopsies' ? (
         <div className="mt-4 space-y-4">
           <div className="card p-4">
-            <h2 className="text-sm font-bold">Pending Idea Autopsies Review Queue</h2>
-            <p className="text-xs text-muted mt-0.5">Verify case studies of failed ideas before publishing them to the public library platform.</p>
+            <h2 className="text-sm font-bold">Pending Failure Stories Review Queue</h2>
+            <p className="text-xs text-muted mt-0.5">Verify case studies of failed ideas before publishing them to the public platform.</p>
           </div>
           {loadingAutopsies ? (
             <ListSkeleton avatar={false} rows={3} className="mt-3" />
           ) : autopsies.length === 0 ? (
-            <div className="card p-8 text-center text-sm text-muted">No pending autopsies to review. Good job!</div>
+            <div className="card p-8 text-center text-sm text-muted">No pending failure stories to review. Good job!</div>
           ) : (
             <div className="card divide-y divide-line">
               {autopsies.map((item) => (
@@ -652,7 +652,38 @@ function SingleAdd() {
   const [result, setResult] = useState(null) // { name, email, password }
   const [copied, setCopied] = useState(false)
 
-  async function copy(text) { try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500) } catch { /* select-all fallback in the UI */ } }
+  async function copy(text) {
+    let success = false
+    if (navigator?.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text)
+        success = true
+      } catch {
+        success = false
+      }
+    }
+    if (!success) {
+      try {
+        const textArea = document.createElement('textarea')
+        textArea.value = text
+        textArea.style.position = 'fixed'
+        textArea.style.left = '-999999px'
+        textArea.style.top = '-999999px'
+        textArea.setAttribute('readonly', '')
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        success = document.execCommand('copy')
+        textArea.remove()
+      } catch {
+        success = false
+      }
+    }
+    if (success) {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    }
+  }
 
   async function createMember() {
     setError(''); setResult(null)

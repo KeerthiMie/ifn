@@ -760,7 +760,8 @@ function Files({ d, mine, onChanged }) {
     setBusy(true)
     setError('')
     const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
-    const path = `${d.idea.id}/${d.idea.gate}/${crypto.randomUUID()}-${safe}`
+    const uidStr = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : Math.random().toString(36).slice(2)
+    const path = `${d.idea.id}/${d.idea.gate}/${uidStr}-${safe}`
     const up = await supabase.storage.from('idea-files').upload(path, file)
     if (up.error) {
       console.error(up.error)

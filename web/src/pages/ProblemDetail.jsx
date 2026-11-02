@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { usePageTitle } from '../lib/usePageTitle'
-import { ArrowLeft, ArrowBigUp, ArrowBigDown, CalendarClock, MessageCircle, MoreHorizontal } from 'lucide-react'
+import { ArrowLeft, ArrowBigUp, ArrowBigDown, CalendarClock, MessageCircle, MoreHorizontal, FileText, Image as ImageIcon, Video, Music, Download, ExternalLink, ShieldCheck, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/AuthProvider'
 import AuthorLink from '../components/AuthorLink'
@@ -10,6 +10,7 @@ import ProblemModal from '../components/ProblemModal'
 import ConfirmModal from '../components/ConfirmModal'
 import { timeAgo } from '../lib/format'
 import { errMessage } from '../lib/errors'
+import { formatFileSize } from '../lib/fileSecurity'
 
 const SSORTS = [
   { s: 'top', label: 'Top' },
@@ -90,6 +91,7 @@ export default function ProblemDetail() {
   const [voteScore, setVoteScore] = useState(0)
   const [myVote, setMyVote] = useState(0)
   const [voting, setVoting] = useState(false)
+  const [previewImage, setPreviewImage] = useState(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -296,6 +298,136 @@ export default function ProblemDetail() {
             </div>
           )}
 
+          {/* Schematics, Diagrams & Multi-format Attachments */}
+          {Array.isArray(problem.attachments) && problem.attachments.length > 0 && (
+            <section className="mt-5 rounded-xl border border-line bg-black/5 dark:bg-white/5 p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-xs font-bold uppercase tracking-wide text-ink flex items-center gap-1.5">
+                  <FileText size={15} className="text-accent" />
+                  Visual Schematics & Attachments ({problem.attachments.length})
+                </h3>
+                <span className="text-[11px] font-medium text-success flex items-center gap-1">
+                  <ShieldCheck size={13} /> Screened & Verified
+                </span>
+              </div>
+
+              {/* Schematic Images Gallery */}
+              {problem.attachments.some((a) => a.category === 'image') && (
+                <div className="mb-4">
+                  <p className="text-xs font-semibold text-muted mb-2">Schematic & Architecture Diagrams:</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {problem.attachments
+                      .filter((a) => a.category === 'image')
+                      .map((att) => (
+                        <div
+                          key={att.id || att.path}
+                          onClick={() => setPreviewImage(att)}
+                          className="group relative cursor-pointer overflow-hidden rounded-lg border border-line bg-card hover:border-accent transition-colors"
+                        >
+                          <img
+                            src={att.url}
+                            alt={att.name}
+                            className="h-40 w-full object-contain bg-black/5 dark:bg-black/30 p-1 group-hover:scale-[1.02] transition-transform"
+                            loading="lazy"
+                          />
+                          <div className="p-2 border-t border-line bg-card flex items-center justify-between">
+                            <span className="text-xs font-medium text-ink truncate max-w-[80%]" title={att.name}>
+                              {att.name}
+                            </span>
+                            <span className="text-[10px] text-muted">{formatFileSize(att.size)}</span>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Video Clips */}
+              {problem.attachments.some((a) => a.category === 'video') && (
+                <div className="mb-4">
+                  <p className="text-xs font-semibold text-muted mb-2">Visual Symptom Video Clips:</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {problem.attachments
+                      .filter((a) => a.category === 'video')
+                      .map((att) => (
+                        <div key={att.id || att.path} className="rounded-lg border border-line bg-card overflow-hidden">
+                          <video
+                            controls
+                            preload="metadata"
+                            src={att.url}
+                            className="w-full max-h-56 bg-black"
+                          >
+                            Your browser does not support the video tag.
+                          </video>
+                          <div className="p-2 text-xs font-medium text-ink flex items-center justify-between">
+                            <span className="truncate" title={att.name}>{att.name}</span>
+                            <span className="text-[10px] text-muted shrink-0 ml-2">{formatFileSize(att.size)}</span>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Audio Clips */}
+              {problem.attachments.some((a) => a.category === 'audio') && (
+                <div className="mb-4">
+                  <p className="text-xs font-semibold text-muted mb-2">Audio Recordings & Notes:</p>
+                  <div className="space-y-2">
+                    {problem.attachments
+                      .filter((a) => a.category === 'audio')
+                      .map((att) => (
+                        <div key={att.id || att.path} className="rounded-lg border border-line bg-card p-3">
+                          <div className="flex items-center justify-between mb-1.5 text-xs font-medium text-ink">
+                            <span className="flex items-center gap-1.5 truncate">
+                              <Music size={14} className="text-accent" /> {att.name}
+                            </span>
+                            <span className="text-[10px] text-muted shrink-0">{formatFileSize(att.size)}</span>
+                          </div>
+                          <audio controls src={att.url} className="w-full h-8" preload="metadata">
+                            Your browser does not support audio.
+                          </audio>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Documents & PDFs */}
+              {problem.attachments.some((a) => a.category === 'pdf' || a.category === 'file') && (
+                <div>
+                  <p className="text-xs font-semibold text-muted mb-2">Documents & Specifications:</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {problem.attachments
+                      .filter((a) => a.category === 'pdf' || a.category === 'file')
+                      .map((att) => (
+                        <a
+                          key={att.id || att.path}
+                          href={att.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-between rounded-lg border border-line bg-card p-2.5 hover:border-accent hover:bg-black/5 transition-colors text-xs"
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <FileText size={18} className="text-accent shrink-0" />
+                            <div className="min-w-0">
+                              <span className="font-semibold text-ink truncate block" title={att.name}>
+                                {att.name}
+                              </span>
+                              <span className="text-[10px] text-muted">
+                                PDF Document · {formatFileSize(att.size)}
+                              </span>
+                            </div>
+                          </div>
+                          <ExternalLink size={14} className="text-muted shrink-0 ml-2" />
+                        </a>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
+
           <div className="mt-4 inline-flex items-center gap-0.5 rounded-lg bg-page px-1 py-0.5">
             <button
               onClick={() => vote(1)}
@@ -455,6 +587,45 @@ export default function ProblemDetail() {
               onConfirm={async () => { await confirm.run(); setConfirm(null) }}
               onClose={() => setConfirm(null)}
             />
+          )}
+
+          {/* Schematic Image Preview Modal */}
+          {previewImage && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+              onClick={() => setPreviewImage(null)}
+            >
+              <div
+                className="relative max-h-[90vh] max-w-4xl overflow-hidden rounded-xl bg-card border border-line p-2"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between p-2 border-b border-line mb-2">
+                  <span className="text-sm font-bold text-ink truncate">{previewImage.name}</span>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={previewImage.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded p-1 text-muted hover:text-ink"
+                      title="Open full size"
+                    >
+                      <ExternalLink size={18} />
+                    </a>
+                    <button
+                      onClick={() => setPreviewImage(null)}
+                      className="rounded p-1 text-muted hover:text-ink"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+                </div>
+                <img
+                  src={previewImage.url}
+                  alt={previewImage.name}
+                  className="max-h-[75vh] w-auto max-w-full object-contain mx-auto rounded"
+                />
+              </div>
+            </div>
           )}
         </>
       )}

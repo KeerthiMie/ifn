@@ -21,7 +21,7 @@ const capCategory = (s) => {
 };
 
 export default function AutopsyLibrary() {
-  usePageTitle('Autopsy Library')
+  usePageTitle('Failure Stories')
   const { session, isAdmin } = useAuth();
   const uid = session?.user?.id;
   const [autopsies, setAutopsies] = useState([]);
@@ -101,11 +101,11 @@ export default function AutopsyLibrary() {
 
       if (error) throw error;
 
-      setSuccessMsg('Autopsy submitted successfully! It is now pending admin verification.');
+      setSuccessMsg('Story submitted successfully! It is now pending admin verification.');
       setIsModalOpen(false);
       resetForm();
     } catch (err) {
-      setFormError(errMessage(err, 'Could not submit your autopsy. Try again.'));
+      setFormError(errMessage(err, 'Could not submit your story. Try again.'));
     } finally {
       setSubmitting(false);
     }
@@ -146,14 +146,14 @@ export default function AutopsyLibrary() {
       {/* Header */}
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-ink">Idea Autopsy Library</h1>
+          <h1 className="text-3xl font-bold text-ink">Failure Stories</h1>
           <p className="mt-1 max-w-prose text-sm text-muted">
-            Post-mortems of failed ideas and startups — what went wrong, and the lessons that
-            outlived them.
+            Case studies of failed ideas and startups — what went wrong, and the valuable lessons
+            that outlived them.
           </p>
         </div>
         <button onClick={() => setIsModalOpen(true)} className="btn-primary">
-          + Share Your Autopsy
+          + Share Your Story
         </button>
       </div>
 
@@ -201,13 +201,13 @@ export default function AutopsyLibrary() {
         <p className="py-12 text-center text-muted">Loading case studies…</p>
       ) : isError ? (
         <div className="py-12 text-center" role="alert">
-          <p className="text-muted">Couldn’t load the autopsy library. Check your connection and try again.</p>
+          <p className="text-muted">Couldn’t load failure stories. Check your connection and try again.</p>
           <button onClick={fetchAutopsies} className="btn-outline mt-4">
             Retry
           </button>
         </div>
       ) : filteredAutopsies.length === 0 ? (
-        <p className="py-12 text-center text-muted">No autopsies found matching the criteria.</p>
+        <p className="py-12 text-center text-muted">No failure stories found matching the criteria.</p>
       ) : (
         <div className="space-y-5">
           {filteredAutopsies.map((autopsy) => {
@@ -260,7 +260,7 @@ export default function AutopsyLibrary() {
                       onClick={() => setReading(autopsy)}
                       className="rounded font-semibold text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
                     >
-                      Read full autopsy →
+                      Read full story →
                     </button>
                   </div>
                 </div>
@@ -342,7 +342,7 @@ export default function AutopsyLibrary() {
           labelledBy="autopsy-share-title"
           className="max-h-[90vh] overflow-y-auto"
         >
-          <h2 id="autopsy-share-title" className="mb-4 text-xl font-bold text-ink">Share Your Idea Autopsy</h2>
+          <h2 id="autopsy-share-title" className="mb-4 text-xl font-bold text-ink">Share a Failure Story</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -420,7 +420,7 @@ export default function AutopsyLibrary() {
                   type="checkbox" checked={isAnonymous} onChange={(e) => setIsAnonymous(e.target.checked)}
                   className="h-4 w-4 rounded accent-accent"
                 />
-                <span className="text-sm font-medium text-ink">Post this autopsy anonymously</span>
+                <span className="text-sm font-medium text-ink">Post this story anonymously</span>
               </label>
 
               {formError && (
@@ -435,7 +435,7 @@ export default function AutopsyLibrary() {
                   Cancel
                 </button>
                 <button type="submit" disabled={submitting} className="btn-primary">
-                  {submitting ? 'Submitting…' : 'Submit Autopsy'}
+                  {submitting ? 'Submitting…' : 'Submit Story'}
                 </button>
               </div>
           </form>
@@ -444,7 +444,7 @@ export default function AutopsyLibrary() {
 
       {confirmDelete && (
         <ConfirmModal
-          title="Delete this autopsy?"
+          title="Delete this story?"
           message={`“${confirmDelete.project_name}” will be permanently removed. This cannot be undone.`}
           confirmLabel="Delete"
           tone="danger"

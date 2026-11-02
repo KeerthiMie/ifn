@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { usePageTitle } from '../lib/usePageTitle'
-import { Plus, Search, CalendarClock, MessageCircle, ArrowBigUp, ArrowBigDown } from 'lucide-react'
+import { Plus, Search, CalendarClock, MessageCircle, ArrowBigUp, ArrowBigDown, Paperclip } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/AuthProvider'
 import AuthorLink from '../components/AuthorLink'
@@ -126,6 +126,12 @@ export default function ProblemHub() {
                   <div className="text-xs text-muted">{timeAgo(p.created_at)}</div>
                 </div>
                 <span className="ml-auto flex shrink-0 items-center gap-1.5">
+                  {Array.isArray(p.attachments) && p.attachments.length > 0 && (
+                    <span className="rounded bg-accent-soft px-2 py-0.5 text-[11px] font-semibold text-accent flex items-center gap-1">
+                      <Paperclip size={11} />
+                      {p.attachments.length}
+                    </span>
+                  )}
                   {p.closed && (
                     <span className="rounded-md bg-down/15 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-down">Closed</span>
                   )}

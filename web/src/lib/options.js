@@ -31,7 +31,7 @@ export const DOMAINS = [
 // MEMBER_TYPES = the "registering as" label picked on the registration form and shown as a
 // badge. Descriptive label only, NOT a permission role (those stay student/mentor/admin).
 export const MEMBER_TYPES = [
-  'Founder', 'Student', 'Mentor', 'Investor', 'Network Enabler', 'Service Provider', 'Incubator', 'Other',
+  'Founder', 'Student', 'Mentor', 'Investor', 'Network Enabler', 'Legal Services', 'Accounting and Finance', 'Service Provider', 'Incubator', 'Other',
 ]
 // Suggested permission level for a member_type. Only "Mentor" implies elevated access; every
 // other label is a regular member. Admin access is never derived from a label. Used to
