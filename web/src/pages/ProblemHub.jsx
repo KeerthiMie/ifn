@@ -43,8 +43,8 @@ export default function ProblemHub() {
     if (voting === problemId) return
     const prob = problems.find((p) => p.id === problemId)
     if (!prob) return
-    const prevScore = Number(prob.score)
-    const prevVote = prob.my_vote ?? 0
+    const prevScore = Number(prob.score) || 0
+    const prevVote = Number(prob.my_vote) || 0
     const nextVote = prevVote === v ? 0 : v
     setProblems((prev) => prev.map((p) =>
       p.id !== problemId ? p : { ...p, score: prevScore + (nextVote - prevVote), my_vote: nextVote || null }
@@ -52,11 +52,14 @@ export default function ProblemHub() {
     setVoting(problemId)
     try {
       if (nextVote === 0) {
-        await supabase.from('problem_votes').delete().eq('problem_id', problemId).eq('user_id', session?.user?.id)
+        const { error: delErr } = await supabase.from('problem_votes').delete().eq('problem_id', problemId).eq('user_id', session?.user?.id)
+        if (delErr) throw delErr
       } else {
-        await supabase.from('problem_votes').upsert({ problem_id: problemId, user_id: session?.user?.id, value: nextVote })
+        const { error: upErr } = await supabase.from('problem_votes').upsert({ problem_id: problemId, user_id: session?.user?.id, value: nextVote })
+        if (upErr) throw upErr
       }
-    } catch {
+    } catch (err) {
+      console.error('Vote failed:', err)
       setProblems((prev) => prev.map((p) =>
         p.id !== problemId ? p : { ...p, score: prevScore, my_vote: prevVote || null }
       ))

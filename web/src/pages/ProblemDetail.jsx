@@ -117,19 +117,22 @@ export default function ProblemDetail() {
 
   async function vote(v) {
     if (voting) return
-    const prevScore = voteScore
-    const prevVote = myVote
-    const nextVote = myVote === v ? 0 : v
+    const prevScore = Number(voteScore) || 0
+    const prevVote = Number(myVote) || 0
+    const nextVote = prevVote === v ? 0 : v
     setMyVote(nextVote)
     setVoteScore(prevScore + (nextVote - prevVote))
     setVoting(true)
     try {
       if (nextVote === 0) {
-        await supabase.from('problem_votes').delete().eq('problem_id', id).eq('user_id', uid)
+        const { error: delErr } = await supabase.from('problem_votes').delete().eq('problem_id', id).eq('user_id', uid)
+        if (delErr) throw delErr
       } else {
-        await supabase.from('problem_votes').upsert({ problem_id: id, user_id: uid, value: nextVote })
+        const { error: upErr } = await supabase.from('problem_votes').upsert({ problem_id: id, user_id: uid, value: nextVote })
+        if (upErr) throw upErr
       }
-    } catch {
+    } catch (err) {
+      console.error('Vote failed:', err)
       setMyVote(prevVote)
       setVoteScore(prevScore)
     } finally {
